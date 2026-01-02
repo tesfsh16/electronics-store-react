@@ -1,5 +1,5 @@
-import products from "../data/products";
-
+import products from '../data/products'
+import ProductCard from '../components/ProductCard';
 function Home(){
 return(
 <div className="max-w-7x1 mx-auto px-4 py-8">
@@ -7,7 +7,8 @@ return(
         Latest Electronics
     </h1>
     <div className="grid grid-cols-1  sm:grid-cols-2 md:gird-cols-3 lg:grid-cols-4 gap-6" >
-        {/* product will rendering here */}
+        {products.map((product)=><ProductCard key={product.id}
+        product={product}/>)}
 
     </div>
 </div>
