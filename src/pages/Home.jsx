@@ -4,6 +4,16 @@ import ProductCard from '../components/ProductCard';
 function Home(){
     const [searchItem , setSearchItem] = useState("");
     const [selectedCatagory , setSelectedCatgory] = useState("All")
+
+const filteredProducts = products.filter((product)=>{
+  const matchsSearch = product.name
+  .toLowerCase()
+  .includes(searchItem.toLowerCase());
+  const machesCategory = selectedCatagory==="All" || product.category === selectedCatagory
+  return matchsSearch && machesCategory 
+});
+
+    
 return (
   <div className="max-w-7x1 mx-auto px-4 py-8">
     <input
@@ -32,7 +42,7 @@ return (
     <h1 className="text-2x1 font-bold mb-6">Latest Electronics</h1>
 
     <div className="grid grid-cols-1  sm:grid-cols-2 md:gird-cols-3 lg:grid-cols-4 gap-6">
-      {products.map((product) => (
+      {Products.map((product) => (
         <ProductCard key={product.id} product={product} />
       ))}
     </div>
