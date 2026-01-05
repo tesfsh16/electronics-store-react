@@ -22,5 +22,10 @@ import { createContext , useState } from "react";
       setCartItem((prevItem)=> prevItem.filter((item)=> item.id !== id)
       );
     };
-
+return (
+<cartContext.prvider
+value ={{cartItem , addToCart, removeFromCart}}>
+   {children}
+</cartContext.prvider>
+);
  }
