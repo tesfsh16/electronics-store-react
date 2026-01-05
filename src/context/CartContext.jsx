@@ -1,7 +1,7 @@
 import { createContext , useState } from "react";
  export const cartContext = createContext();
 
- function cartProveder({children}){
+ function CartProvider({children}){
     const [cartItem , setCartItem ] = useState([]);
     
     //Add to cart
@@ -23,9 +23,9 @@ import { createContext , useState } from "react";
       );
     };
 return (
-<cartContext.prvider
+<cartContext.Provider
 value ={{cartItem , addToCart, removeFromCart}}>
    {children}
-</cartContext.prvider>
+</cartContext.Provider>
 );
  }
