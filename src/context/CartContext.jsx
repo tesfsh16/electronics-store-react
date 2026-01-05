@@ -16,6 +16,11 @@ import { createContext , useState } from "react";
       });
     };
 
-    //
+    //Remove from cart
+
+    const removeFromCart = (id)=>{
+      setCartItem((prevItem)=> prevItem.filter((item)=> item.id !== id)
+      );
+    };
 
  }
