@@ -1,6 +1,8 @@
-import Home from "../pages/Home";
+import { useContext } from "react";
+import { cartContext } from "../context/CartContext";
 
 function ProductCard({product}){
+  const {addToCart} = useContext(cartContext);
 return(
     <div className="bg-white rounded-lg shadow hover:shadow-lg transition">
       <img 
@@ -16,7 +18,7 @@ return(
         {product.description}
     </p>
     <p className="text-accent font-bold mt-2">
-        {product.price}
+        ${product.price}
     </p>
   </div>
     </div>
