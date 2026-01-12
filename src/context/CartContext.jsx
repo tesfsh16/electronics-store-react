@@ -6,6 +6,10 @@ import { createContext , useState , useEffect} from "react";
       const storedCart = localStorage.getItem("cart");
       return storedCart? JSON.parse(storedCart) : [];
     });
+
+    useEffect(()=>{
+      localStorage.setItem("cart",JSON.stringify(cartItem));
+    }, [cartItem]);
     
     //Add to cart
 
