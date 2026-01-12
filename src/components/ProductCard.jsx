@@ -4,11 +4,11 @@ import { cartContext } from "../context/CartContext";
 function ProductCard({product}){
   const {addToCart} = useContext(cartContext);
 return (
-  <div className="bg-white rounded-lg shadow hover:shadow-lg transition">
+  <div className="bg-white rounded-lg shadow hover:shadow-lg transition ">
     <img
       src={product.image}
       alt={product.name}
-      className="w-full h-40 object-cover rounded-t-lg"
+      className="w-full h-40 object-cover rounded-t-lg "
     />
     <div className="p-4">
       <h2 className="font-semibold text-lg">{product.name}</h2>
