@@ -1,8 +1,8 @@
 import { useContext } from "react";
-import { cartContext } from "../context/CartContext";
+import { CartContext } from "../context/CartContext";
 
 function Cart(){
-const {cartItem , removeFromCart} = useContext(cartContext);
+const {cartItem , removeFromCart} = useContext(CartContext);
 
 if(cartItem.length ===0){
 return(

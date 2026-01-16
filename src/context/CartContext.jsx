@@ -28,12 +28,12 @@ function cartReducer(state, action) {
   }
 }
 
-function CartProvider({ children }) {
-  const [cartItems, dispatch] = useReducer(cartReducer, initialState);
+export function CartProvider({ children }) {
+  const [cartItem, dispatch] = useReducer(cartReducer, initialState);
 
   useEffect(() => {
-    localStorage.setItem("cart", JSON.stringify(cartItems));
-  }, [cartItems]);
+    localStorage.setItem("cart", JSON.stringify(cartItem));
+  }, [cartItem]);
 
   const addToCart = (product) => {
     dispatch({ type: "ADD_TO_CART", payload: product });
@@ -44,7 +44,7 @@ function CartProvider({ children }) {
   };
 
   return (
-    <CartContext.Provider value={{ cartItems, addToCart, removeFromCart }}>
+    <CartContext.Provider value={{ cartItem, addToCart, removeFromCart }}>
       {children}
     </CartContext.Provider>
   );

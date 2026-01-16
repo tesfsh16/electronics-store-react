@@ -1,8 +1,8 @@
 import { useContext } from "react";
-import { cartContext } from "../context/CartContext";
+import { CartContext } from "../context/CartContext";
 
 function ProductCard({product}){
-  const {addToCart} = useContext(cartContext);
+  const {addToCart} = useContext(CartContext);
 return (
   <div className="bg-white rounded-lg shadow hover:shadow-lg transition ">
     <img
