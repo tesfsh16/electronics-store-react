@@ -7,7 +7,7 @@ const {cartItem} = useContext(CartContext);
 
 const totalItems = cartItem.reduce((total, item)=>total + item.quantity,0);
 return (
-  <header className="bg-primary text-black px-6 py-4 flex justify-between item-center">
+  <header className="bg-gray-900 text-white px-6 py-4 flex justify-between item-center">
     <Link to="/" className="text-x1 font-bold hover:underline">
      Tesfsh Electronics Store
     </Link>
