@@ -30,12 +30,15 @@ function ProductDetails() {
 
         <p className="text-gray-600 mb-4">{product.description}</p>
 
-        <p className="text-2xl text- font-blue-500 bold mb-6">${product.price}</p>
+        <p className="text-2xl text-blue-500 font-bold mb-6">
+          ${product.price}
+        </p>
 
         <button
           onClick={() => addToCart(product)}
           className="bg-blue-500 text-white px-6 py-3 rounded hover:bg-blue-700"
-        >Add to Cart
+        >
+          Add to Cart
         </button>
       </div>
     </div>
