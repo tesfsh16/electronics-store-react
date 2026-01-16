@@ -9,7 +9,7 @@ const totalItems = cartItem.reduce((total, item)=>total + item.quantity,0);
 return (
   <header className="bg-primary text-black px-6 py-4 flex justify-between item-center">
     <Link to="/" className="text-x1 font-bold hover:underline">
-      ElectroStore
+     Tesfsh Electronics Store
     </Link>
     <Link to="/cart" className="relative">
       🛒
