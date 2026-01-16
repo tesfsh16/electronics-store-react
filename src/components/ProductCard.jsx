@@ -21,7 +21,7 @@ return (
       <p className="text-accent font-bold mt-2">${product.price}</p>
       <button
         onClick={() => addToCart(product)}
-        className="mt-4 w-full bg-blue-400 text-white py-2 rounded hover:bg-blue-700"
+        className="mt-4 w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-700"
       >
         Add to cart
       </button>
