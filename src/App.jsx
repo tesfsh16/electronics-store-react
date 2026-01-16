@@ -1,6 +1,6 @@
 import {BrowserRouter , Routes , Route} from "react-router-dom"
 import Home from "./pages/Home";
-import Cart from "./pages/cart";
+import Cart from "./pages/Cart";
 import Header from "./components/Header"
 
 function App() {
