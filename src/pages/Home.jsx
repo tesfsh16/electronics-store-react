@@ -15,7 +15,7 @@ const filteredProducts = products.filter((product)=>{
 
     
 return (
-  <div className="max-w-7x1 mx-auto px-4 py-8">
+  <div className="max-w-7x1 mx-auto px-4 py-8 ">
     <input
       type="text"
       placeholder="Search products..."
@@ -30,7 +30,7 @@ return (
           onClick={() => setSelectedCatgory(catagory)}
           className={`px-4 py-2 rounded ${
             selectedCatagory === catagory
-              ? "bg-accent text-white"
+              ? "bg-blue-500 text-white"
               : "bg-gray-200"
           }`}
         >
