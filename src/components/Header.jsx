@@ -1,11 +1,13 @@
 import { Link} from "react-router-dom";
-import { useContext } from "react";
+import { useContext ,  useMemo} from "react";
 import { CartContext } from "../context/CartContext";
 
 function Header (){
 const {cartItem} = useContext(CartContext);
 
-const totalItems = cartItem.reduce((total, item)=>total + item.quantity,0);
+const totalItems = useMemo(()=>{
+  return cartItem.reduce((total, item) => total + item.quantity, 0);
+}, [cartItem]);
 return (
   <header className="bg-gray-900 text-white px-6 py-4 flex justify-between item-center sticky top-0">
     <Link to="/" className="text-x1 font-bold hover:underline">
