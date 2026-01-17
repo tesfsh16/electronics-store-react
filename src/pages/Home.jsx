@@ -1,17 +1,20 @@
-import { useState } from 'react';
+import { useState ,useMemo } from 'react';
 import products from '../data/products'
 import ProductCard from '../components/ProductCard';
 function Home(){
     const [searchItem , setSearchItem] = useState("");
     const [selectedCatagory , setSelectedCatgory] = useState("All")
 
-const filteredProducts = products.filter((product)=>{
-  const matchsSearch = product.name
-  .toLowerCase()
-  .includes(searchItem.toLowerCase());
-  const machesCategory = selectedCatagory==="All" || product.category === selectedCatagory
-  return matchsSearch && machesCategory 
-});
+const filteredProducts = useMemo(()=>{
+  return products.filter((product) => {
+    const matchsSearch = product.name
+      .toLowerCase()
+      .includes(searchItem.toLowerCase());
+    const machesCategory =
+      selectedCatagory === "All" || product.category === selectedCatagory;
+    return matchsSearch && machesCategory;
+  });
+}, [searchItem , selectedCatagory]);
 
     
 return (
