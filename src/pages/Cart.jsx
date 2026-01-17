@@ -1,10 +1,15 @@
 import { useContext } from "react";
 import { CartContext } from "../context/CartContext";
+import { useMemo } from "react";
 
 function Cart(){
 const {cartItem , removeFromCart, increaseQty ,decreaseQty} = useContext(CartContext);
 
-const totalPrice = cartItem.reduce((total, item)=>total + item.price*item.quantity , 0 );
+const totalPrice =useMemo(()=>{
+  return cartItem.reduce(
+  (total, item)=>total + item.price*item.quantity , 0 );
+} , [cartItem]);
+
 
 if(cartItem.length ===0){
 return(
