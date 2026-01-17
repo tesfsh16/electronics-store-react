@@ -1,3 +1,4 @@
+import { useCallback } from "react";
 import { createContext, useReducer, useEffect } from "react";
 
 // eslint-disable-next-line react-refresh/only-export-components
@@ -51,22 +52,22 @@ export function CartProvider({ children }) {
     localStorage.setItem("cart", JSON.stringify(cartItem));
   }, [cartItem]);
 
-  const addToCart = (product) => {
+  const addToCart = useCallback((product) => {
     dispatch({ type: "ADD_TO_CART", payload: product });
-  };
+  }, []);
 
-  const increaseQty = (id) => {
+  const increaseQty = useCallback((id) => {
     dispatch({ type: "INCREASE_QTY", payload: id });
-  };
+  },[]);
 
-  const decreaseQty = (id) => {
+  const decreaseQty =useCallback((id) => {
     dispatch({ type: "DECREASE_QTY", payload: id });
-  };
+  },[]);
 
 
-  const removeFromCart = (id) => {
+  const removeFromCart = useCallback((id) => {
     dispatch({ type: "REMOVE_FROM_CART", payload: id });
-  };
+  }, []);
 
   return (
     <CartContext.Provider value={{ cartItem, addToCart, removeFromCart, increaseQty, decreaseQty }}>
