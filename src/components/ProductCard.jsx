@@ -1,6 +1,7 @@
 import {Link} from "react-router-dom";
 import { useContext } from "react";
 import { CartContext } from "../context/CartContext";
+import { memo } from "react";
 
 function ProductCard({product}){
   const {addToCart} = useContext(CartContext);
@@ -30,4 +31,4 @@ return (
 );
 }
 
-export default ProductCard;
+export default memo(ProductCard);
