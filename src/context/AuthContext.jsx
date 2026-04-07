@@ -10,12 +10,19 @@ export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // 3️⃣ Listen to Firebase Auth State
+  // Listen to Firebase auth state. If init fails, do not block the whole UI.
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setCurrentUser(user);
+    let unsubscribe = () => {};
+
+    try {
+      unsubscribe = onAuthStateChanged(auth, (user) => {
+        setCurrentUser(user);
+        setLoading(false);
+      });
+    } catch (error) {
+      console.error("Auth listener initialization failed:", error);
       setLoading(false);
-    });
+    }
 
     return () => unsubscribe();
   }, []);
