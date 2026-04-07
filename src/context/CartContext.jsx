@@ -1,10 +1,11 @@
 import { useCallback } from "react";
 import { createContext, useReducer, useEffect } from "react";
+import { useAuth } from "./AuthContext";
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const CartContext = createContext();
 
-const initialState = JSON.parse(localStorage.getItem("cart")) || [];
+const initialState = [];
 
 function cartReducer(state, action) {
   switch (action.type) {
@@ -40,17 +41,27 @@ function cartReducer(state, action) {
     case "REMOVE_FROM_CART":
       return state.filter((item) => item.id !== action.payload);
 
+    case "SET_CART":
+      return action.payload;
+
     default:
       return state;
   }
 }
 
 export function CartProvider({ children }) {
+  const { currentUser } = useAuth();
   const [cartItem, dispatch] = useReducer(cartReducer, initialState);
+  const cartKey = currentUser?.uid ? `cart_${currentUser.uid}` : "cart_guest";
 
   useEffect(() => {
-    localStorage.setItem("cart", JSON.stringify(cartItem));
-  }, [cartItem]);
+    const storedCart = JSON.parse(localStorage.getItem(cartKey)) || [];
+    dispatch({ type: "SET_CART", payload: storedCart });
+  }, [cartKey]);
+
+  useEffect(() => {
+    localStorage.setItem(cartKey, JSON.stringify(cartItem));
+  }, [cartItem, cartKey]);
 
   const addToCart = useCallback((product) => {
     dispatch({ type: "ADD_TO_CART", payload: product });
