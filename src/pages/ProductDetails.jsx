@@ -1,13 +1,18 @@
 import { useParams } from "react-router-dom";
-import products from "../data/products";
 import { useContext } from "react";
 import { CartContext } from "../context/CartContext";
+import useProducts from "../hooks/useProducts";
 
 function ProductDetails() {
   const { id } = useParams();
   const { addToCart } = useContext(CartContext);
+  const { products, loading } = useProducts();
 
-  const product = products.find((item) => item.id === Number(id));
+  const product = products.find((item) => String(item.id) === String(id));
+
+  if (loading) {
+    return <div className="p-8 text-center">Loading product...</div>;
+  }
 
   if (!product) {
     return (

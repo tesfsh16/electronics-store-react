@@ -5,7 +5,7 @@ import { useAuth } from "../context/AuthContext";
 
 function Header() {
   const { cartItem } = useContext(CartContext);
-  const { currentUser, logout } = useAuth();
+  const { currentUser, isAdmin, logout } = useAuth();
 
   const totalItems = useMemo(() => {
     return cartItem.reduce((total, item) => total + item.quantity, 0);
@@ -28,13 +28,20 @@ function Header() {
             </Link>
           </>
         ) : (
-          <button
-            type="button"
-            onClick={logout}
-            className="text-sm hover:text-gray-300"
-          >
-            Logout
-          </button>
+          <>
+            {isAdmin && (
+              <Link to="/admin/products" className="text-sm hover:text-gray-300">
+                Admin
+              </Link>
+            )}
+            <button
+              type="button"
+              onClick={logout}
+              className="text-sm hover:text-gray-300"
+            >
+              Logout
+            </button>
+          </>
         )}
 
         <Link to="/cart" className="relative">

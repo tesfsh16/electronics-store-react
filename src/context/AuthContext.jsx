@@ -9,6 +9,10 @@ const AuthContext = createContext();
 export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const adminEmails = (import.meta.env.VITE_ADMIN_EMAILS || "")
+    .split(",")
+    .map((email) => email.trim().toLowerCase())
+    .filter(Boolean);
 
   // Listen to Firebase auth state. If init fails, do not block the whole UI.
   useEffect(() => {
@@ -34,6 +38,9 @@ export function AuthProvider({ children }) {
 
   const value = {
     currentUser,
+    isAdmin:
+      !!currentUser?.email &&
+      adminEmails.includes(currentUser.email.toLowerCase()),
     logout,
   };
 
