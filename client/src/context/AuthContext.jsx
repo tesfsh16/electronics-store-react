@@ -1,57 +1,66 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { onAuthStateChanged, signOut } from "firebase/auth";
-import { auth } from "../firebase";
+import { loginUser, registerUser, getMe } from "../api";
 
-// 1️⃣ Create Context
 const AuthContext = createContext();
 
-// 2️⃣ Provider Component
 export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const adminEmails = (import.meta.env.VITE_ADMIN_EMAILS || "")
-    .split(",")
-    .map((email) => email.trim().toLowerCase())
-    .filter(Boolean);
 
-  // Listen to Firebase auth state. If init fails, do not block the whole UI.
+  // When the app first loads, check if a token is saved in localStorage.
+  // If it is, ask the backend who this user is.
   useEffect(() => {
-    let unsubscribe = () => {};
+    const token = localStorage.getItem("token");
 
-    try {
-      unsubscribe = onAuthStateChanged(auth, (user) => {
-        setCurrentUser(user);
-        setLoading(false);
-      });
-    } catch (error) {
-      console.error("Auth listener initialization failed:", error);
+    if (!token) {
       setLoading(false);
+      return;
     }
 
-    return () => unsubscribe();
+    getMe()
+      .then((user) => setCurrentUser(user))
+      .catch(() => {
+        // Token is expired or invalid — clear it
+        localStorage.removeItem("token");
+      })
+      .finally(() => setLoading(false));
   }, []);
 
-  // 4️⃣ Logout Function
-  const logout = () => {
-    return signOut(auth);
-  };
+  // Register a new account, then log in automatically
+  async function register(name, email, password) {
+    const data = await registerUser(name, email, password);
+    localStorage.setItem("token", data.token);
+    setCurrentUser(data);
+  }
+
+  // Log in with email and password
+  async function login(email, password) {
+    const data = await loginUser(email, password);
+    localStorage.setItem("token", data.token);
+    setCurrentUser(data);
+  }
+
+  // Log out: clear the token and user from memory
+  function logout() {
+    localStorage.removeItem("token");
+    setCurrentUser(null);
+  }
 
   const value = {
     currentUser,
-    isAdmin:
-      !!currentUser?.email &&
-      adminEmails.includes(currentUser.email.toLowerCase()),
+    isAdmin: currentUser?.role === "admin",
+    login,
+    register,
     logout,
+    loading,
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {!loading && children}
-    </AuthContext.Provider>
-  );
+  // Don't render the app until we know if the user is logged in
+  if (loading) return null;
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
-// 5️⃣ Custom Hook
 export function useAuth() {
   return useContext(AuthContext);
 }

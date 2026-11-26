@@ -1,41 +1,21 @@
 import { useEffect, useState } from "react";
-import { collection, onSnapshot } from "firebase/firestore";
-import { db } from "../firebase";
-import fallbackProducts from "../data/products";
+import { fetchProducts } from "../api";
 
 function useProducts() {
-  const [products, setProducts] = useState(fallbackProducts);
+  const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
-    const productsRef = collection(db, "products");
-    const unsubscribe = onSnapshot(
-      productsRef,
-      (snapshot) => {
-        setError("");
-        const items = snapshot.docs.map((item) => ({
-          id: item.id,
-          ...item.data(),
-        }));
-
-        if (items.length > 0) {
-          setProducts(items);
-        } else {
-          setProducts(fallbackProducts);
-        }
-
+    fetchProducts()
+      .then((data) => {
+        setProducts(data);
         setLoading(false);
-      },
-      (firestoreError) => {
-        console.error("Products read failed:", firestoreError);
-        setError("Could not load products from database.");
-        setProducts(fallbackProducts);
+      })
+      .catch((err) => {
+        setError(err.message);
         setLoading(false);
-      }
-    );
-
-    return () => unsubscribe();
+      });
   }, []);
 
   return { products, loading, error };
