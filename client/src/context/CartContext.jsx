@@ -47,6 +47,9 @@ function cartReducer(state, action) {
     case "SET_CART":
       return action.payload;
 
+    case "CLEAR_CART":
+      return [];
+
     default:
       return state;
   }
@@ -92,9 +95,13 @@ export function CartProvider({ children }) {
     dispatch({ type: "REMOVE_FROM_CART", payload: productId });
   }, []);
 
+  const clearCart = useCallback(() => {
+    dispatch({ type: "CLEAR_CART" });
+  }, []);
+
   return (
     <CartContext.Provider
-      value={{ cartItem, addToCart, removeFromCart, increaseQty, decreaseQty }}
+      value={{ cartItem, addToCart, removeFromCart, increaseQty, decreaseQty, clearCart }}
     >
       {children}
     </CartContext.Provider>
