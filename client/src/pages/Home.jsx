@@ -25,6 +25,7 @@ function Home() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
+      {/* Search */}
       <input
         type="text"
         placeholder="Search products..."
@@ -33,6 +34,7 @@ function Home() {
         className="w-full md:w-1/2 p-2 border rounded"
       />
 
+      {/* Category filter buttons */}
       <div className="flex gap-4 mt-4 flex-wrap">
         {categories.map((category) => (
           <button
@@ -41,7 +43,7 @@ function Home() {
             className={`px-4 py-2 rounded ${
               selectedCategory === category
                 ? "bg-blue-500 text-white"
-                : "bg-gray-200"
+                : "bg-gray-200 hover:bg-gray-300"
             }`}
           >
             {category}
@@ -50,18 +52,32 @@ function Home() {
       </div>
 
       <h1 className="text-2xl font-bold mb-6 mt-6">Latest Electronics</h1>
+
+      {/* Error state - backend is unreachable */}
       {error && (
-        <p className="mb-4 text-sm text-amber-600">
-          Live products are unavailable. Showing fallback products.
-        </p>
+        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded text-sm text-red-600">
+          Could not connect to the server. Please try again later.
+        </div>
       )}
 
+      {/* Loading state */}
       {loading ? (
-        <p>Loading products...</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {[...Array(8)].map((_, i) => (
+            <div
+              key={i}
+              className="bg-white rounded-lg shadow h-64 animate-pulse"
+            />
+          ))}
+        </div>
+      ) : filteredProducts.length === 0 ? (
+        <p className="text-gray-500 text-center py-12">
+          No products found. Try a different search or category.
+        </p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {filteredProducts.map((product) => (
-            <ProductCard key={product.id} product={product} />
+            <ProductCard key={product._id} product={product} />
           ))}
         </div>
       )}
