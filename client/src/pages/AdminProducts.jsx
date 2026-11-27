@@ -1,14 +1,10 @@
 import { useEffect, useState } from "react";
 import {
-  addDoc,
-  collection,
-  deleteDoc,
-  doc,
-  onSnapshot,
-  serverTimestamp,
-  updateDoc,
-} from "firebase/firestore";
-import { db } from "../firebase";
+  fetchProducts,
+  createProduct,
+  updateProduct,
+  deleteProduct,
+} from "../api";
 
 const emptyForm = {
   name: "",
@@ -27,25 +23,17 @@ function AdminProducts() {
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
+  // Load products from our backend on page open
   useEffect(() => {
-    const productsRef = collection(db, "products");
-    const unsubscribe = onSnapshot(
-      productsRef,
-      (snapshot) => {
-        const nextProducts = snapshot.docs.map((item) => ({
-          id: item.id,
-          ...item.data(),
-        }));
-        setProducts(nextProducts);
+    fetchProducts()
+      .then((data) => {
+        setProducts(data);
         setLoading(false);
-      },
-      () => {
+      })
+      .catch(() => {
         setError("Failed to load products.");
         setLoading(false);
-      }
-    );
-
-    return () => unsubscribe();
+      });
   }, []);
 
   const handleChange = (event) => {
@@ -56,6 +44,7 @@ function AdminProducts() {
   const resetForm = () => {
     setForm(emptyForm);
     setEditingId(null);
+    setError("");
   };
 
   const handleEdit = (product) => {
@@ -67,15 +56,16 @@ function AdminProducts() {
       image: product.image || "",
       description: product.description || "",
     });
-    setEditingId(product.id);
+    setEditingId(product._id);
   };
 
   const handleDelete = async (id) => {
-    const confirmed = window.confirm("Delete this product?");
-    if (!confirmed) return;
+    if (!window.confirm("Delete this product?")) return;
 
     try {
-      await deleteDoc(doc(db, "products", id));
+      await deleteProduct(id);
+      // Remove from local state so the UI updates instantly
+      setProducts((prev) => prev.filter((p) => p._id !== id));
     } catch {
       setError("Could not delete product.");
     }
@@ -88,7 +78,7 @@ function AdminProducts() {
 
     const payload = {
       name: form.name.trim(),
-      category: form.category.trim(),
+      category: form.category,
       description: form.description.trim(),
       image: form.image.trim(),
       price: Number(form.price),
@@ -115,20 +105,17 @@ function AdminProducts() {
 
     try {
       if (editingId) {
-        await updateDoc(doc(db, "products", editingId), {
-          ...payload,
-          updatedAt: serverTimestamp(),
-        });
+        const updated = await updateProduct(editingId, payload);
+        setProducts((prev) =>
+          prev.map((p) => (p._id === editingId ? updated : p))
+        );
       } else {
-        await addDoc(collection(db, "products"), {
-          ...payload,
-          createdAt: serverTimestamp(),
-          updatedAt: serverTimestamp(),
-        });
+        const created = await createProduct(payload);
+        setProducts((prev) => [created, ...prev]);
       }
       resetForm();
-    } catch {
-      setError("Failed to save product. Check Firestore rules.");
+    } catch (err) {
+      setError(err.message || "Failed to save product.");
     } finally {
       setSubmitting(false);
     }
@@ -136,7 +123,7 @@ function AdminProducts() {
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold mb-6">Admin Product Catalog</h1>
+      <h1 className="text-2xl font-bold mb-6">Admin — Product Catalog</h1>
 
       <form
         onSubmit={handleSubmit}
@@ -165,7 +152,7 @@ function AdminProducts() {
           min="0"
           value={form.price}
           onChange={handleChange}
-          placeholder="Price"
+          placeholder="Price in ETB"
           className="border rounded p-2"
         />
         <input
@@ -174,7 +161,7 @@ function AdminProducts() {
           min="0"
           value={form.stock}
           onChange={handleChange}
-          placeholder="Stock"
+          placeholder="Stock quantity"
           className="border rounded p-2"
         />
         <input
@@ -193,7 +180,9 @@ function AdminProducts() {
           className="border rounded p-2 md:col-span-2"
         />
 
-        {error && <p className="text-red-500 text-sm md:col-span-2">{error}</p>}
+        {error && (
+          <p className="text-red-500 text-sm md:col-span-2">{error}</p>
+        )}
 
         <div className="flex gap-3 md:col-span-2">
           <button
@@ -201,13 +190,17 @@ function AdminProducts() {
             disabled={submitting}
             className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:opacity-70"
           >
-            {submitting ? "Saving..." : editingId ? "Update Product" : "Add Product"}
+            {submitting
+              ? "Saving..."
+              : editingId
+              ? "Update Product"
+              : "Add Product"}
           </button>
           {editingId && (
             <button
               type="button"
               onClick={resetForm}
-              className="bg-gray-200 px-4 py-2 rounded"
+              className="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300"
             >
               Cancel Edit
             </button>
@@ -216,36 +209,46 @@ function AdminProducts() {
       </form>
 
       <div className="mt-8">
-        <h2 className="text-xl font-semibold mb-4">Current Products</h2>
+        <h2 className="text-xl font-semibold mb-4">
+          Products ({products.length})
+        </h2>
         {loading ? (
           <p>Loading products...</p>
         ) : products.length === 0 ? (
-          <p>No products yet. Add your first product.</p>
+          <p>No products yet. Add your first product above.</p>
         ) : (
           <div className="grid gap-4">
             {products.map((product) => (
               <div
-                key={product.id}
+                key={product._id}
                 className="bg-white rounded-lg shadow p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3"
               >
-                <div>
-                  <p className="font-semibold">{product.name}</p>
-                  <p className="text-sm text-gray-600">
-                    {product.category} - ${product.price} - Stock: {product.stock}
-                  </p>
+                <div className="flex items-center gap-4">
+                  <img
+                    src={product.image}
+                    alt={product.name}
+                    className="w-14 h-14 object-cover rounded"
+                  />
+                  <div>
+                    <p className="font-semibold">{product.name}</p>
+                    <p className="text-sm text-gray-600">
+                      {product.category} · ETB {product.price.toLocaleString()} ·
+                      Stock: {product.stock}
+                    </p>
+                  </div>
                 </div>
                 <div className="flex gap-2">
                   <button
                     type="button"
                     onClick={() => handleEdit(product)}
-                    className="px-3 py-1 rounded bg-gray-200"
+                    className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300"
                   >
                     Edit
                   </button>
                   <button
                     type="button"
-                    onClick={() => handleDelete(product.id)}
-                    className="px-3 py-1 rounded bg-red-600 text-white"
+                    onClick={() => handleDelete(product._id)}
+                    className="px-3 py-1 rounded bg-red-600 text-white hover:bg-red-700"
                   >
                     Delete
                   </button>

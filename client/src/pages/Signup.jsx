@@ -1,24 +1,29 @@
 import { useState } from "react";
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../firebase";
 import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 function Signup() {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
+  const { register } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    setLoading(true);
 
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
+      await register(name, email, password);
       navigate("/");
     } catch (err) {
       setError(err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -33,6 +38,15 @@ function Signup() {
         {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
 
         <input
+          type="text"
+          placeholder="Full Name"
+          className="w-full border p-2 mb-4 rounded"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          required
+        />
+
+        <input
           type="email"
           placeholder="Email"
           className="w-full border p-2 mb-4 rounded"
@@ -43,7 +57,7 @@ function Signup() {
 
         <input
           type="password"
-          placeholder="Password"
+          placeholder="Password (min 6 characters)"
           className="w-full border p-2 mb-4 rounded"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
@@ -52,9 +66,10 @@ function Signup() {
 
         <button
           type="submit"
-          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+          disabled={loading}
+          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 disabled:opacity-50"
         >
-          Sign Up
+          {loading ? "Creating account..." : "Sign Up"}
         </button>
 
         <p className="text-sm mt-4 text-center">
