@@ -15,8 +15,24 @@ connectDB();
 
 const app = express();
 
-// Middleware
-app.use(cors());
+// CORS: allow requests from our React app
+// In production CLIENT_URL is set to the Vercel domain
+const allowedOrigins = [
+  "http://localhost:5173",
+  process.env.CLIENT_URL,
+].filter(Boolean);
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      // Allow requests with no origin (mobile apps, Postman, curl)
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) return callback(null, true);
+      callback(new Error(`CORS blocked: ${origin}`));
+    },
+    credentials: true,
+  })
+);
 app.use(express.json());
 
 // Health check route - used to see if the server is alive
