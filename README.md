@@ -1,16 +1,97 @@
-# React + Vite
+# Tesfsh Electronics Store 🛒
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A complete full-stack e-commerce store for electronics, built for the Ethiopian market.
+Prices in ETB, payment via Chapa (Telebirr, CBE, cards) or Cash on Delivery.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Customer side:** browse, search, filter, cart, checkout, order history
+- **Payments:** Chapa online payment (Telebirr, all Ethiopian banks) or Cash on Delivery
+- **Admin side:** manage products (add/edit/delete) and orders (change delivery status)
+- **Auth:** JWT login system with customer/admin roles
+- **Database:** MongoDB with stock control
 
-## React Compiler
+## Tech Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+| Layer   | Technology |
+|---------|-----------|
+| Frontend | React 19, Vite, Tailwind CSS |
+| Backend  | Node.js, Express |
+| Database | MongoDB (Mongoose) |
+| Payment  | Chapa API |
 
-## Expanding the ESLint configuration
+## Project Structure
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+```
+electronics-store/
+├── client/    # React frontend (Vite + Tailwind)
+└── server/    # Express API + MongoDB
+```
+
+## Getting Started
+
+### 1. Requirements
+- Node.js 18+
+- MongoDB (local or Atlas)
+
+### 2. Install dependencies
+
+```bash
+npm run install:all
+```
+
+### 3. Set up environment variables
+
+Copy the example files and fill them in:
+
+```bash
+# server
+cp server/.env.example server/.env
+# client
+cp client/.env.example client/.env
+```
+
+Server `.env` needs:
+- `MONGODB_URI` — your MongoDB connection string
+- `JWT_SECRET` — any long random string
+- `CHAPA_SECRET_KEY` — from your Chapa dashboard
+
+Client `.env` needs:
+- `VITE_API_URL` — the backend address (e.g. `http://localhost:5000`)
+
+### 4. Seed the database (20 sample products + admin account)
+
+```bash
+npm run seed
+```
+
+### 5. Run
+
+```bash
+npm run server   # backend on http://localhost:5000
+npm run client   # frontend on http://localhost:5173
+```
+
+## Test Admin Account
+
+After seeding:
+- Email: `admin@estore.com`
+- Password: `admin1234` (change this before going live!)
+
+## API Endpoints
+
+| Method | Endpoint | Access |
+|--------|----------|--------|
+| POST | `/api/auth/register` | Public |
+| POST | `/api/auth/login` | Public |
+| GET | `/api/auth/me` | Logged in |
+| GET | `/api/products` | Public |
+| POST/PUT/DELETE | `/api/products/...` | Admin |
+| POST | `/api/orders` | Logged in |
+| GET | `/api/orders/my` | Logged in |
+| GET | `/api/orders` | Admin |
+| POST | `/api/payments/chapa/initialize` | Logged in |
+
+## Author
+
+**Tesfaye Sherefa** — built while learning full-stack development.
